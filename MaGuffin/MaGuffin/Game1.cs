@@ -18,6 +18,17 @@ namespace MaGuffin
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        //Textures
+        Texture2D txtr_protag;
+        Texture2D txtr_protagFront;
+        Texture2D txtr_protagBack;
+        Texture2D txtr_protagLeft;
+        Texture2D txtr_protagRight;
+        //Vectors
+        Vector2 v_protagLoc;
+        Vector2 v_protagSpd;
+        //Other
+        int count;
 
         public Game1()
         {
@@ -33,7 +44,12 @@ namespace MaGuffin
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            //Initialize vector values
+            v_protagLoc = new Vector2(64,64);
+            v_protagSpd = Vector2.Zero;
+
+            //Other
+            count = 0;
 
             base.Initialize();
         }
@@ -47,7 +63,12 @@ namespace MaGuffin
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            //Load texture files
+            txtr_protagFront = Content.Load<Texture2D>("protag_forward");
+            txtr_protagBack = Content.Load<Texture2D>("protag_back");
+            txtr_protagLeft = Content.Load<Texture2D>("protag_left");
+            txtr_protagRight = Content.Load<Texture2D>("protag_right");
+            txtr_protag = txtr_protagFront;
         }
 
         /// <summary>
@@ -67,10 +88,16 @@ namespace MaGuffin
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+                //this.Exit();
 
-            // TODO: Add your update logic here
+            if (count == 0)
+                checkInput();
+
+            v_protagLoc += v_protagSpd; //updates protag location based on speed
+
+            if (count == 3) count = 0;
+            else count++;
 
             base.Update(gameTime);
         }
@@ -82,10 +109,37 @@ namespace MaGuffin
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
 
-            // TODO: Add your drawing code here
+            //Draw sprites
+            spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
 
+            spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        public void checkInput()
+        {
+            KeyboardState keyboard = Keyboard.GetState();
+            int moveIncrement = 3; //indicates how far character will move each update
+
+            if (keyboard.IsKeyDown(Keys.Up)) { 
+                v_protagSpd = new Vector2(0,-1*moveIncrement);
+                txtr_protag = txtr_protagBack;
+            }
+            else if (keyboard.IsKeyDown(Keys.Down)){ 
+                v_protagSpd = new Vector2(0,moveIncrement);
+                txtr_protag = txtr_protagFront;
+            }
+            else if(keyboard.IsKeyDown(Keys.Left)){ 
+                v_protagSpd = new Vector2(-1*moveIncrement,0);
+                txtr_protag = txtr_protagLeft;
+            }
+            else if(keyboard.IsKeyDown(Keys.Right)){ 
+                v_protagSpd = new Vector2(moveIncrement,0);
+                txtr_protag = txtr_protagRight;
+            }
+            else{ v_protagSpd = Vector2.Zero; }
         }
     }
 }

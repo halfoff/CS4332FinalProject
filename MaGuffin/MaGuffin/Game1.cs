@@ -24,6 +24,19 @@ namespace MaGuffin
         Texture2D txtr_protagBack;
         Texture2D txtr_protagLeft;
         Texture2D txtr_protagRight;
+        Texture2D txtr_blacksmith;
+        Texture2D txtr_fisherman;
+        Texture2D txtr_gluemaker;
+        Texture2D txtr_seamstress;
+        Texture2D txtr_manA;
+        Texture2D txtr_manB;
+        Texture2D txtr_manC;
+        Texture2D txtr_manD;
+        Texture2D txtr_womanA;
+        Texture2D txtr_womanB;
+        Texture2D txtr_womanC;
+        Texture2D txtr_womanD;
+        Texture2D txtr_womanE;
         //Vectors
         Vector2 v_protagLoc;
         Vector2 v_protagSpd;
@@ -69,6 +82,20 @@ namespace MaGuffin
             txtr_protagLeft = Content.Load<Texture2D>("protag_left");
             txtr_protagRight = Content.Load<Texture2D>("protag_right");
             txtr_protag = txtr_protagFront;
+
+            txtr_blacksmith = Content.Load<Texture2D>("npc_blacksmith_forward");
+            txtr_fisherman = Content.Load<Texture2D>("npc_fisherman_forward");
+            txtr_gluemaker = Content.Load<Texture2D>("npc_gluemaker_forward");
+            txtr_seamstress = Content.Load<Texture2D>("npc_seamstress_forward");
+            txtr_manA = Content.Load<Texture2D>("npc_manA_forward");
+            txtr_manB = Content.Load<Texture2D>("npc_manB_forward");
+            txtr_manC = Content.Load<Texture2D>("npc_manC_forward");
+            txtr_manD = Content.Load<Texture2D>("npc_manD_forward");
+            txtr_womanA = Content.Load<Texture2D>("npc_womanA_forward");
+            txtr_womanB = Content.Load<Texture2D>("npc_womanB_forward");
+            txtr_womanC = Content.Load<Texture2D>("npc_womanC_forward");
+            txtr_womanD = Content.Load<Texture2D>("npc_womanD_forward");
+            txtr_womanE = Content.Load<Texture2D>("npc_womanE_forward");
         }
 
         /// <summary>
@@ -108,11 +135,29 @@ namespace MaGuffin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            int x = 16;
+            int y = 16;
+            int space = 16;
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
 
             //Draw sprites
             spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
+            
+            spriteBatch.Draw(txtr_blacksmith, new Vector2(x,y), Color.White);
+            spriteBatch.Draw(txtr_fisherman, new Vector2(x + (space * 1), y), Color.White);
+            spriteBatch.Draw(txtr_gluemaker, new Vector2(x + (space * 2), y), Color.White);
+            spriteBatch.Draw(txtr_seamstress, new Vector2(x + (space * 3), y), Color.White);
+            spriteBatch.Draw(txtr_manA, new Vector2(x, y + (space * 1)), Color.White);
+            spriteBatch.Draw(txtr_manB, new Vector2(x + (space * 1), y + (space * 1)), Color.White);
+            spriteBatch.Draw(txtr_manC, new Vector2(x + (space * 2), y + (space * 1)), Color.White);
+            spriteBatch.Draw(txtr_manD, new Vector2(x + (space * 3), y + (space * 1)), Color.White);
+            spriteBatch.Draw(txtr_womanA, new Vector2(x, y + (space * 2)), Color.White);
+            spriteBatch.Draw(txtr_womanB, new Vector2(x + (space * 1), y + (space * 2)), Color.White);
+            spriteBatch.Draw(txtr_womanC, new Vector2(x + (space * 2), y + (space * 2)), Color.White);
+            spriteBatch.Draw(txtr_womanD, new Vector2(x + (space * 3), y + (space * 2)), Color.White);
+            spriteBatch.Draw(txtr_womanE, new Vector2(x + (space * 4), y + (space * 2)), Color.White);
 
             spriteBatch.End();
             base.Draw(gameTime);

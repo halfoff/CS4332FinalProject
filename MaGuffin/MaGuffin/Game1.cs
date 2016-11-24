@@ -18,8 +18,8 @@ namespace MaGuffin
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        int w_height = 400;
-        int w_width = 544;
+        int w_height = 400; //screen height
+        int w_width = 544; //screen width
         //Textures
         Texture2D txtr_protag;
         Texture2D txtr_protagFront;
@@ -45,6 +45,7 @@ namespace MaGuffin
         Vector2 v_protagSpd;
         //Other
         int count;
+        List<NPC> list_npc = new List<NPC>();
 
         public Game1()
         {
@@ -104,6 +105,8 @@ namespace MaGuffin
             txtr_womanE = Content.Load<Texture2D>("npc_womanE_forward");
 
             txtr_citymap = Content.Load<Texture2D>("city");
+
+            setUpNPCs();
         }
 
         /// <summary>
@@ -153,22 +156,11 @@ namespace MaGuffin
             //Draw map
             spriteBatch.Draw(txtr_citymap, Vector2.Zero, Color.White);
 
-            //Draw sprites
+            //Draw NPC sprites
+            for(int i = 0; i < list_npc.Count; i++)
+                spriteBatch.Draw(list_npc[i].getSprite(), list_npc[i].getLoc(), Color.White);
+
             spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
-            
-            spriteBatch.Draw(txtr_blacksmith, new Vector2(x,y), Color.White);
-            spriteBatch.Draw(txtr_fisherman, new Vector2(x + (space * 1), y), Color.White);
-            spriteBatch.Draw(txtr_gluemaker, new Vector2(x + (space * 2), y), Color.White);
-            spriteBatch.Draw(txtr_seamstress, new Vector2(x + (space * 3), y), Color.White);
-            spriteBatch.Draw(txtr_manA, new Vector2(x, y + (space * 1)), Color.White);
-            spriteBatch.Draw(txtr_manB, new Vector2(x + (space * 1), y + (space * 1)), Color.White);
-            spriteBatch.Draw(txtr_manC, new Vector2(x + (space * 2), y + (space * 1)), Color.White);
-            spriteBatch.Draw(txtr_manD, new Vector2(x + (space * 3), y + (space * 1)), Color.White);
-            spriteBatch.Draw(txtr_womanA, new Vector2(x, y + (space * 2)), Color.White);
-            spriteBatch.Draw(txtr_womanB, new Vector2(x + (space * 1), y + (space * 2)), Color.White);
-            spriteBatch.Draw(txtr_womanC, new Vector2(x + (space * 2), y + (space * 2)), Color.White);
-            spriteBatch.Draw(txtr_womanD, new Vector2(x + (space * 3), y + (space * 2)), Color.White);
-            spriteBatch.Draw(txtr_womanE, new Vector2(x + (space * 4), y + (space * 2)), Color.White);
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -181,25 +173,47 @@ namespace MaGuffin
             int moveIncrement = 2; //indicates how far character will move each update
 
             if (keyboard.IsKeyDown(Keys.Up)) {
-                if(v_protagLoc.Y > 6)
+                if(v_protagLoc.Y > 6 && !collideNPC(0))
                     v_protagSpd = new Vector2(0,-1*moveIncrement);
                 txtr_protag = txtr_protagBack;
             }
-            else if (keyboard.IsKeyDown(Keys.Down)){
+            else if (keyboard.IsKeyDown(Keys.Down) && !collideNPC(1))
+            {
                 if (v_protagLoc.Y < w_height-16)
                     v_protagSpd = new Vector2(0,moveIncrement);
                 txtr_protag = txtr_protagFront;
             }
-            else if(keyboard.IsKeyDown(Keys.Left)){
+            else if (keyboard.IsKeyDown(Keys.Left) && !collideNPC(2))
+            {
                 if (v_protagLoc.X > 6)
                     v_protagSpd = new Vector2(-1*moveIncrement,0);
                 txtr_protag = txtr_protagLeft;
             }
-            else if(keyboard.IsKeyDown(Keys.Right)){
+            else if (keyboard.IsKeyDown(Keys.Right) && !collideNPC(3))
+            {
                 if (v_protagLoc.X < w_width-16)
                     v_protagSpd = new Vector2(moveIncrement,0);
                 txtr_protag = txtr_protagRight;
             }
+        }
+
+        /* 0 - up, 1 - down, 2 - left, 3 - right */
+        public Boolean collideNPC(int dir)
+        {
+            for (int i = 0; i < list_npc.Count; i++)
+            {
+                Boolean c = list_npc[i].checkCollision(dir, v_protagLoc);
+                if (c) return true;
+            }
+            return false;
+        }
+
+        public void setUpNPCs()
+        {
+            NPC blacksmith = new NPC(txtr_blacksmith, new Vector2(410, 230));
+            NPC seamstress = new NPC(txtr_seamstress, new Vector2(190, 135));
+            list_npc.Add(blacksmith);
+            list_npc.Add(seamstress);
         }
     }
 }

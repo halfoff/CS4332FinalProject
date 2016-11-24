@@ -11,7 +11,7 @@ namespace MaGuffin
     class GameEntity
     {
         //Position of the GE
-        private Vector2 loc;
+         Vector2 loc;
         //Graphic representation of GE
         Texture2D sprite;
         //Size of GameEntity in px
@@ -20,6 +20,15 @@ namespace MaGuffin
         public GameEntity()
         {
             loc = new Vector2(0, 0);
+            height = 0;
+            width = 0;
+        }
+
+        public  GameEntity(Vector2 location, int h, int w)
+        {
+            loc = location;
+            height = h;
+            width = w;
         }
     }
 }

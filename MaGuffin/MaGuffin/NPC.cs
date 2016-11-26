@@ -13,17 +13,27 @@ namespace MaGuffin
         //States describing player's current action
         private enum NPCState
         { interact };
-        Texture2D sprite; //The currently active sprite
-        Vector2 location;
+        private String name;
+        private List<Interaction> interactions;
+        private Texture2D sprite; //The currently active sprite
+        private Vector2 location;
 
-        public NPC(Texture2D s, Vector2 l)
+        public NPC(String n, Texture2D s, Vector2 l)
         {
+            name = n;
             sprite = s;
             location = l;
+            interactions = new List<Interaction>();
         }
 
+        public String getName() { return name; }
         public Texture2D getSprite() { return sprite; }
         public Vector2 getLoc() { return location; }
+
+        public void addInteraction(int num, String text)
+        {
+            interactions.Add(new Interaction(num, text));
+        }
 
         /* 0 - up, 1 - down, 2 - left, 3 - right */
         public Boolean checkCollision(int dir, Vector2 player)
@@ -36,6 +46,23 @@ namespace MaGuffin
                 return player.X > location.X + 12 && player.X < location.X + 16 && player.Y > location.Y - 16 && player.Y < location.Y + 10;
             else //right
                 return player.X > location.X - 16 && player.X < location.X && player.Y > location.Y - 16 && player.Y < location.Y + 10;
+        }
+
+        public Boolean canInteract(Vector2 player)
+        {
+            return player.X > location.X - 12 && player.X < location.X + 12 && player.Y > location.Y && player.Y < location.Y + 10;
+        }
+
+        //Returns first valid
+        public Interaction getInteraction()
+        {
+            for (int i = 0; i < interactions.Count(); i++)
+                if (interactions[i].validInteraction())
+                {
+                    interactions[i].decNumTimes();
+                    return interactions[i];
+                }
+            return null;
         }
     }
 }

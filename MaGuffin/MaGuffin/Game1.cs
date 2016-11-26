@@ -40,11 +40,18 @@ namespace MaGuffin
         Texture2D txtr_womanD;
         Texture2D txtr_womanE;
         Texture2D txtr_citymap;
+        Texture2D txtr_textbox;
         //Vectors
         Vector2 v_protagLoc;
         Vector2 v_protagSpd;
+        //Font
+        SpriteFont normalFont;
+        SpriteFont headerFont;
         //Other
         int count;
+        Boolean lockMovement;
+        String npcName;
+        String npcText;
         List<NPC> list_npc = new List<NPC>();
 
         public Game1()
@@ -70,6 +77,9 @@ namespace MaGuffin
 
             //Other
             count = 0;
+            lockMovement = false;
+            npcName = "";
+            npcText = "";
 
             base.Initialize();
         }
@@ -105,6 +115,11 @@ namespace MaGuffin
             txtr_womanE = Content.Load<Texture2D>("npc_womanE_forward");
 
             txtr_citymap = Content.Load<Texture2D>("city");
+            txtr_textbox = Content.Load<Texture2D>("textbox");
+
+            //Fonts
+            normalFont = Content.Load<SpriteFont>("font");
+            headerFont = Content.Load<SpriteFont>("boldfont");
 
             setUpNPCs();
         }
@@ -129,8 +144,10 @@ namespace MaGuffin
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 //this.Exit();
 
-            if (count == 0)
+            if (count == 0 && !lockMovement)
                 checkInput();
+            else if (count == 0 && lockMovement)
+                checkTextProgression();
 
             v_protagLoc += v_protagSpd; //updates protag location based on speed
 
@@ -161,6 +178,14 @@ namespace MaGuffin
                 spriteBatch.Draw(list_npc[i].getSprite(), list_npc[i].getLoc(), Color.White);
 
             spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
+
+            //Draw textbox
+            if (npcName != "" && npcText != "")
+            {
+                spriteBatch.Draw(txtr_textbox, Vector2.Zero, Color.White);
+                spriteBatch.DrawString(headerFont, npcName, new Vector2(20, 275), Color.Black);
+                spriteBatch.DrawString(normalFont, npcText, new Vector2(20, 300), Color.Black);
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -195,6 +220,28 @@ namespace MaGuffin
                     v_protagSpd = new Vector2(moveIncrement,0);
                 txtr_protag = txtr_protagRight;
             }
+            else if (keyboard.IsKeyDown(Keys.Space))
+            {
+                int possible = canInteractNPC();
+                if (possible > -1)
+                {
+                    lockMovement = true;
+                    Interaction i = list_npc[possible].getInteraction();
+                    npcName = list_npc[possible].getName();
+                    npcText = i.getText();
+                }
+            }
+        }
+
+        public void checkTextProgression()
+        {
+            KeyboardState keyboard = Keyboard.GetState();
+            if (keyboard.IsKeyDown(Keys.Space))
+            {
+                lockMovement = false;
+                npcName = "";
+                npcText = "";
+            }
         }
 
         /* 0 - up, 1 - down, 2 - left, 3 - right */
@@ -208,12 +255,51 @@ namespace MaGuffin
             return false;
         }
 
+        public int canInteractNPC()
+        {
+            for (int i = 0; i < list_npc.Count; i++)
+            {
+                Boolean c = list_npc[i].canInteract(v_protagLoc);
+                if (c) return i;
+            }
+            return -1;
+        }
+
         public void setUpNPCs()
         {
-            NPC blacksmith = new NPC(txtr_blacksmith, new Vector2(410, 230));
-            NPC seamstress = new NPC(txtr_seamstress, new Vector2(190, 135));
+            NPC blacksmith = new NPC("Blacksmith", txtr_blacksmith, new Vector2(410, 230));
+            blacksmith.addInteraction(1, "You want a sword, eh? What would a shrimp like you\ndo with a sword?");
+            blacksmith.addInteraction(-1, "I already told you no. I'm not giving you a\nsword. Shoo!");
+
+            NPC seamstress = new NPC("Seamstress", txtr_seamstress, new Vector2(190, 135));
+            seamstress.addInteraction(-1, "I'm working on a new outfit. Isn't it lovely?");
+
+            NPC fisherman = new NPC("Fisherman", txtr_fisherman, new Vector2(345, 135));
+            fisherman.addInteraction(-1, "I come here every afternoon to drop a line and\ncatch some fish.");
+
+            NPC gluemaker = new NPC("Craftsman", txtr_gluemaker, new Vector2(220, 325));
+            gluemaker.addInteraction(-1, "I've just moved to town. I hope the citizens\nhere will buy my wares.");
+
+            NPC manA = new NPC("Harold", txtr_manA, new Vector2(440, 25));
+            manA.addInteraction(-1, "-pant pant- Let me catch my breath.");
+
+            NPC manB = new NPC("Samson", txtr_manB, new Vector2(70, 230));
+            manB.addInteraction(-1, "What are you looking at?");
+
+            NPC womanB = new NPC("Sequoia", txtr_womanB, new Vector2(470, 110));
+            womanB.addInteraction(-1, "I seem to be terribly lost. Can you help me?");
+
+            NPC womanC = new NPC("Marri", txtr_womanC, new Vector2(120, 40));
+            womanC.addInteraction(-1, "I'm not doing anything! Honest! Leave me alone!");
+
             list_npc.Add(blacksmith);
             list_npc.Add(seamstress);
+            list_npc.Add(fisherman);
+            list_npc.Add(gluemaker);
+            list_npc.Add(manA);
+            list_npc.Add(manB);
+            list_npc.Add(womanB);
+            list_npc.Add(womanC);
         }
     }
 }

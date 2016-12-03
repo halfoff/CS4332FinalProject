@@ -12,11 +12,16 @@ namespace MaGuffin
     {
         //States describing player's current action
         private enum NPCState
-        { interact };
+        { interact, idle };
         private String name;
         private List<Interaction> interactions;
         private Texture2D sprite; //The currently active sprite
         private Vector2 location;
+        //Used for giving the player an item
+        private String requiredItem;
+        private String givingItem;
+        //Flag for changing dialog when item is given
+        private bool gaveItemFlag;
 
         public NPC(String n, Texture2D s, Vector2 l)
         {
@@ -63,6 +68,12 @@ namespace MaGuffin
                     return interactions[i];
                 }
             return null;
+        }
+
+        public bool checkItem(String itemToCheck)
+        {
+            return (itemToCheck.Equals(requiredItem));
+           
         }
     }
 }

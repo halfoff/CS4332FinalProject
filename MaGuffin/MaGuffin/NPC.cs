@@ -70,10 +70,21 @@ namespace MaGuffin
             return null;
         }
 
-        public bool checkItem(String itemToCheck)
+        private bool checkItem(String itemToCheck)
         {
             return (itemToCheck.Equals(requiredItem));
            
+        }
+
+        public String givePlayerItem(String playerItem)
+        {
+            if(this.checkItem(playerItem))
+            {
+                gaveItemFlag = true;
+                return this.givingItem;
+            }
+
+            return playerItem;
         }
     }
 }

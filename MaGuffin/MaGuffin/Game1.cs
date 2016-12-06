@@ -53,6 +53,8 @@ namespace MaGuffin
         String npcName;
         String npcText;
         List<NPC> list_npc = new List<NPC>();
+        List<Rectangle> list_scenery = new List<Rectangle>();
+        Texture2D singlePixel;
 
         public Game1()
         {
@@ -75,11 +77,16 @@ namespace MaGuffin
             v_protagLoc = new Vector2(64,64);
             v_protagSpd = Vector2.Zero;
 
+            //Initialize single pixel texture
+            singlePixel = new Texture2D(this.GraphicsDevice, 1, 1);
+            singlePixel.SetData(new Color[] { Color.White });
+
             //Other
             count = 0;
             lockMovement = false;
             npcName = "";
             npcText = "";
+
 
             base.Initialize();
         }
@@ -122,6 +129,7 @@ namespace MaGuffin
             headerFont = Content.Load<SpriteFont>("boldfont");
 
             setUpNPCs();
+            setUpSceneryCollision();
         }
 
         /// <summary>
@@ -179,6 +187,10 @@ namespace MaGuffin
 
             spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
 
+            //Draw collision boxes
+            //for (int i = 0; i < list_scenery.Count; i++)
+                //spriteBatch.Draw(singlePixel, list_scenery[i], Color.White * 0.5f);
+
             //Draw textbox
             if (npcName != "" && npcText != "")
             {
@@ -195,28 +207,29 @@ namespace MaGuffin
         {
             KeyboardState keyboard = Keyboard.GetState();
             v_protagSpd = Vector2.Zero;
-            int moveIncrement = 2; //indicates how far character will move each update
+            int moveIncrement = 1; //indicates how far character will move each update
 
-            if (keyboard.IsKeyDown(Keys.Up)) {
-                if(v_protagLoc.Y > 6 && !collideNPC(0))
+            if (keyboard.IsKeyDown(Keys.Up))
+            {
+                if(v_protagLoc.Y > 6 && !collideNPC(0) && !collideScenery(0))
                     v_protagSpd = new Vector2(0,-1*moveIncrement);
                 txtr_protag = txtr_protagBack;
             }
-            else if (keyboard.IsKeyDown(Keys.Down) && !collideNPC(1))
+            else if (keyboard.IsKeyDown(Keys.Down))
             {
-                if (v_protagLoc.Y < w_height-16)
+                if (v_protagLoc.Y < w_height - 16 && !collideNPC(1) && !collideScenery(1))
                     v_protagSpd = new Vector2(0,moveIncrement);
                 txtr_protag = txtr_protagFront;
             }
-            else if (keyboard.IsKeyDown(Keys.Left) && !collideNPC(2))
+            else if (keyboard.IsKeyDown(Keys.Left))
             {
-                if (v_protagLoc.X > 6)
+                if (v_protagLoc.X > 6 && !collideNPC(2) && !collideScenery(2))
                     v_protagSpd = new Vector2(-1*moveIncrement,0);
                 txtr_protag = txtr_protagLeft;
             }
-            else if (keyboard.IsKeyDown(Keys.Right) && !collideNPC(3))
+            else if (keyboard.IsKeyDown(Keys.Right))
             {
-                if (v_protagLoc.X < w_width-16)
+                if (v_protagLoc.X < w_width - 16 && !collideNPC(3) && !collideScenery(3))
                     v_protagSpd = new Vector2(moveIncrement,0);
                 txtr_protag = txtr_protagRight;
             }
@@ -250,6 +263,26 @@ namespace MaGuffin
             for (int i = 0; i < list_npc.Count; i++)
             {
                 Boolean c = list_npc[i].checkCollision(dir, v_protagLoc);
+                if (c) return true;
+            }
+            return false;
+        }
+
+        /* 0 - up, 1 - down, 2 - left, 3 - right */
+        public Boolean collideScenery(int dir)
+        {
+            Boolean c = false;
+            for (int i = 0; i < list_scenery.Count; i++)
+            {
+                Rectangle obj = list_scenery[i];
+                if (dir == 0) //up
+                    c = v_protagLoc.X > obj.X - 16 && v_protagLoc.X < obj.X + obj.Width && v_protagLoc.Y > obj.Y && v_protagLoc.Y < obj.Y + obj.Height + 1;
+                else if (dir == 1) //down
+                    c = v_protagLoc.X > obj.X - 16 && v_protagLoc.X < obj.X + obj.Width && v_protagLoc.Y > obj.Y - 17 && v_protagLoc.Y < obj.Y;
+                else if (dir == 2) //left
+                    c = v_protagLoc.X > obj.X + obj.Width - 4 && v_protagLoc.X < obj.X + obj.Width + 2 && v_protagLoc.Y > obj.Y - 16 && v_protagLoc.Y < obj.Y + obj.Height;
+                else //right
+                    c = v_protagLoc.X > obj.X - 16 && v_protagLoc.X < obj.X && v_protagLoc.Y > obj.Y - 16 && v_protagLoc.Y < obj.Y + obj.Height;
                 if (c) return true;
             }
             return false;
@@ -300,6 +333,30 @@ namespace MaGuffin
             list_npc.Add(manB);
             list_npc.Add(womanB);
             list_npc.Add(womanC);
+        }
+
+        public void setUpSceneryCollision()
+        {
+            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
+            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
+            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
+            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
+            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
+            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
+            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
+            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
+            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
+            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
+            list_scenery.Add(topWall1);
+            list_scenery.Add(topWall2);
+            list_scenery.Add(leftBuilding1);
+            list_scenery.Add(leftBuilding2);
+            list_scenery.Add(leftBuilding3);
+            list_scenery.Add(buildingLine1);
+            list_scenery.Add(buildingLine2);
+            list_scenery.Add(buildingLine3);
+            list_scenery.Add(bottomWall1);
+            list_scenery.Add(bottomWall2);
         }
     }
 }

@@ -91,7 +91,7 @@ namespace MaGuffin
             npcText = new[] { "Press SPACE to advance text and talk to NPCs.\nUse the ARROW KEYS to move.",
                               "You are Mac MaGuffin, adventure extrodinare.",
                               "At least, you would be an adventurer if you\nhadn't lost your trusty sword.",
-                              "Maybe someone in town will trade you one?"
+                              "Maybe someone in town will trade you one? You\ndon't have any money though, just this Cheese\nWheel..."
                             };
             textProg = 0;
             textMax = npcText.Length;
@@ -461,7 +461,7 @@ namespace MaGuffin
             grate1.addInteraction(-1, new[] {"It's a sewer grate. There's unidentified sludge\nin it."}, "", "");
             NPC grate2 = new NPC("Sewer Grate", txtr_grate, new Vector2(440, 147));
             grate2.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
-            NPC grate3 = new NPC("Sewer Grate", txtr_grate, new Vector2(160, 340));
+            NPC grate3 = new NPC("Sewer Grate", txtr_grate, new Vector2(125, 325));
             grate3.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
             NPC grate4 = new NPC("Sewer Grate", txtr_grate, new Vector2(315, 243));
             grate4.addInteraction(1, new[] { "It's a sewer grate. There's unidentified sludge\nin it.",

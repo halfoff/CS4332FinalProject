@@ -182,8 +182,11 @@ namespace MaGuffin
             spriteBatch.Draw(txtr_citymap, Vector2.Zero, Color.White);
 
             //Draw NPC sprites
-            for(int i = 0; i < list_npc.Count; i++)
+            for (int i = 0; i < list_npc.Count; i++)
+            {
                 spriteBatch.Draw(list_npc[i].getSprite(), list_npc[i].getLoc(), Color.White);
+                //spriteBatch.Draw(singlePixel, list_npc[i].getCollision(), Color.Black * 0.75f); //draw collision boxes
+            }
 
             spriteBatch.Draw(txtr_protag, v_protagLoc, Color.White);
 

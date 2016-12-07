@@ -17,6 +17,7 @@ namespace MaGuffin
         private List<Interaction> interactions;
         private Texture2D sprite; //The currently active sprite
         private Vector2 location;
+        private Rectangle collision;
         //Used for giving the player an item
         private String requiredItem;
         private String givingItem;
@@ -28,12 +29,14 @@ namespace MaGuffin
             name = n;
             sprite = s;
             location = l;
+            collision = new Rectangle((int)l.X + 4, (int)l.Y, 8, 8); 
             interactions = new List<Interaction>();
         }
 
         public String getName() { return name; }
         public Texture2D getSprite() { return sprite; }
         public Vector2 getLoc() { return location; }
+        public Rectangle getCollision() { return collision; }
 
         public void addInteraction(int num, String text)
         {
@@ -44,18 +47,18 @@ namespace MaGuffin
         public Boolean checkCollision(int dir, Vector2 player)
         {
             if (dir == 0) //up
-                return player.X > location.X - 12 && player.X < location.X + 12 && player.Y > location.Y && player.Y < location.Y + 10;
+                return player.X > collision.X - 16 && player.X < collision.X + collision.Width && player.Y > collision.Y && player.Y < collision.Y + collision.Height + 1;
             else if (dir == 1) //down
-                return player.X > location.X - 12 && player.X < location.X + 12 && player.Y > location.Y - 16 && player.Y < location.Y;
+                return player.X > collision.X - 16 && player.X < collision.X + collision.Width && player.Y > collision.Y - 17 && player.Y < collision.Y;
             else if (dir == 2) //left
-                return player.X > location.X + 12 && player.X < location.X + 16 && player.Y > location.Y - 16 && player.Y < location.Y + 10;
+                return player.X > collision.X + collision.Width - 4 && player.X < collision.X + collision.Width + 2 && player.Y > collision.Y - 16 && player.Y < collision.Y + collision.Height;
             else //right
-                return player.X > location.X - 16 && player.X < location.X && player.Y > location.Y - 16 && player.Y < location.Y + 10;
+                return player.X > collision.X - 16 && player.X < collision.X && player.Y > collision.Y - 16 && player.Y < collision.Y + collision.Height;
         }
 
         public Boolean canInteract(Vector2 player)
         {
-            return player.X > location.X - 12 && player.X < location.X + 12 && player.Y > location.Y && player.Y < location.Y + 10;
+            return player.X > collision.X - 16 && player.X < collision.X + collision.Width && player.Y > collision.Y && player.Y < collision.Y + collision.Height + 5;
         }
 
         //Returns first valid

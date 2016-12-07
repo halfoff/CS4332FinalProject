@@ -39,6 +39,7 @@ namespace MaGuffin
         Texture2D txtr_womanC;
         Texture2D txtr_womanD;
         Texture2D txtr_womanE;
+        Texture2D txtr_grate;
         Texture2D txtr_citymap;
         Texture2D txtr_textbox;
         //Vectors
@@ -76,7 +77,7 @@ namespace MaGuffin
         protected override void Initialize()
         {
             //Initialize vector values
-            v_protagLoc = new Vector2(64,64);
+            v_protagLoc = new Vector2(187,375);
             v_protagSpd = Vector2.Zero;
 
             //Initialize single pixel texture
@@ -85,10 +86,15 @@ namespace MaGuffin
 
             //Other
             count = 0;
-            lockMovement = false;
-            npcName = "";
-            npcText = new String[0];
+            lockMovement = true;
+            npcName = " ";
+            npcText = new[] { "Press SPACE to advance text and talk to NPCs.\nUse the ARROW KEYS to move.",
+                              "You are Mac MaGuffin, adventure extrodinare.",
+                              "At least, you would be an adventurer if you\nhadn't lost your trusty sword.",
+                              "Maybe someone in town will trade you one?"
+                            };
             textProg = 0;
+            textMax = npcText.Length;
             protagInventory = "Cheese Wheel";
 
             base.Initialize();
@@ -123,6 +129,7 @@ namespace MaGuffin
             txtr_womanC = Content.Load<Texture2D>("npc_womanC_forward");
             txtr_womanD = Content.Load<Texture2D>("npc_womanD_forward");
             txtr_womanE = Content.Load<Texture2D>("npc_womanE_forward");
+            txtr_grate = Content.Load<Texture2D>("npc_grate");
 
             txtr_citymap = Content.Load<Texture2D>("city");
             txtr_textbox = Content.Load<Texture2D>("textbox");
@@ -151,10 +158,7 @@ namespace MaGuffin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                //this.Exit();
-
+            //Counters for checking input
             if (count == 0 && !lockMovement)
                 checkInput();
             else if (count == 0 && lockMovement)
@@ -162,7 +166,9 @@ namespace MaGuffin
 
             v_protagLoc += v_protagSpd; //updates protag location based on speed
 
-            if (count == 3) count = 0;
+            //Reset counters
+            if (!lockMovement && count >= 3) count = 0;
+            else if(lockMovement && count >= 5) count = 0;
             else count++;
 
             base.Update(gameTime);
@@ -332,17 +338,46 @@ namespace MaGuffin
 
         public void setUpNPCs()
         {
+            //BLACKSMITH
             NPC blacksmith = new NPC("Blacksmith", txtr_blacksmith, new Vector2(410, 230));
             blacksmith.addInteraction(1, new[] {"You want a sword, eh? What would a shrimp like you\ndo with a sword?"}, "", "");
-            blacksmith.addInteraction(-1, new[] {"I already told you no. I'm not giving you a\nsword. Shoo!"}, "", "");
+            blacksmith.addInteraction(1, new[] { "I already told you no. I'm not giving you a\nsword. Shoo!",
+                                                 "Wait, you have money? Hmmmm. Maybe I'll reconsider.",
+                                                 "<GOLD has been exchanged for SWORD>"
+                                               }, "Gold", "Sword");
 
+            //SEAMSTRESS
             NPC seamstress = new NPC("Seamstress", txtr_seamstress, new Vector2(190, 135));
-            seamstress.addInteraction(-1, new[] {"I'm working on a new outfit. Isn't it lovely?"}, "", "");
+            seamstress.addInteraction(1, new[] { "I'm working on a new outfit. Isn't it lovely?",
+                                                 "Woah, that hair comb you have is exquisite!\nWould you be willing to sell it to me?",
+                                                 "...",
+                                                 "Thank you! This will go fabulously with my\nnew dress!",
+                                                 "<DECORATIVE COMB has been exchanged for GOLD>"
+                                               }, "Decorative Comb", "Gold");
+            seamstress.addInteraction(-1, new[] { "-hums happily" }, "", "");
 
+            //FISHERMAN
             NPC fisherman = new NPC("Fisherman", txtr_fisherman, new Vector2(345, 135));
-            fisherman.addInteraction(-1, new[] {"I come here every afternoon to drop a line and\ncatch some fish."}, "", "");
+            fisherman.addInteraction(1, new[] {"I come here every afternoon to drop a line and\ncatch some fish."}, "", "");
+            fisherman.addInteraction(1, new[] { "Curses! I seem to have run out of bait.",
+                                                "Wait, you've found me more bait? Thank you,\nstranger! Let's see if the fish like it.",
+                                                "-swish- -sploosh-",
+                                                ".",
+                                                "..",
+                                                "...",
+                                                "Wait! Oh, nevermind.",
+                                                ".",
+                                                "..",
+                                                "!!!",
+                                                "-whiiiiiirrrrrr-",
+                                                "Wowwee! We caught a big 'un! This will feed my\nwhole family tonight!",
+                                                "Here, it's well worn, but take my fishing pole.\nI've got others at home.",
+                                                "<DEAD COCKROACHES has been exchanged for\nFISHING POLE>"
+                                              }, "Dead Cockroaches", "Fishing Pole");
+            fisherman.addInteraction(-1, new[] { "The Missus is going to be so happy tonight..." }, "", "");
 
-            NPC gluemaker = new NPC("Craftsman", txtr_gluemaker, new Vector2(220, 325));
+            //GLUEMAKER
+            NPC gluemaker = new NPC("Gluemaker", txtr_gluemaker, new Vector2(220, 325));
             gluemaker.addInteraction(1, new[] { "I've just moved to town to open up a shop.",
                                                 "Hopefully I can find all of the supplies I need..."
                                               }, "", "");
@@ -350,15 +385,17 @@ namespace MaGuffin
                                                 "Look, I really don't have time right now, kid.\nI've got to find...",
                                                 "Wait.",
                                                 "Are those Boar Hooves you're holding?! You've got\nto give them to me! I'll reward you!",
-                                                "...",
-                                                "...",
+                                                ".",
+                                                "..",
                                                 "...",
                                                 "There, all done. You've really save my sorry hide,\nkid. Without you, I wouldn't have been able to\n" + 
                                                 "get my glue shop off the ground.",
                                                 "Here, take some of my first glue batch as a reward.",
                                                 "<BOAR HOOVES has been exchanged for GLUE POT>"
                                               }, "Boar Hooves", "Glue Pot");
+            gluemaker.addInteraction(-1, new[] { "Glue for sale! Freshly made glue! Buy yours now!" }, "", "");
 
+            //HAROLD THE RUNNER
             NPC manA = new NPC("Harold", txtr_manA, new Vector2(440, 25));
             manA.addInteraction(1, new[] { "You shouldn't ever see this text. ;)", //text if item is not held
                                            "-pant pant- Let me catch my breath.",
@@ -372,15 +409,74 @@ namespace MaGuffin
             manA.addInteraction(3, new[] { "-munch munch- Thanks again, stranger!" }, "", "");
             manA.addInteraction(-1, new[] { "-braaaappp- Wow, that really hit the spot!" }, "", "");
 
+            //SAMSON THE SAILOR
             NPC manB = new NPC("Samson", txtr_manB, new Vector2(70, 230));
-            manB.addInteraction(-1, new[] {"What are you looking at?"}, "", "");
+            manB.addInteraction(1, new[] { "I'm staying the night at this tavern while\nmy captain recruits new sailors.",
+                                           "Our last crew was a bunch of sissies, so he\nfired them all. Not me though! I'm tough.",
+                                           "-skitter skitter-",
+                                           "EEEEEEEEE! Is that a cockroach? Kill it, kill it!"
+                                         }, "", "");
+            manB.addInteraction(1, new[] { "Hurry up and kill the roach! It almost touched me!",
+                                           "<You smack the cockroach with the head of the\nbroom.>",
+                                           "Thanks kid. Don't tell anybody you saw that, okay?\nIf you do, I'll find you and ... and bad things\nwill happen!",
+                                           "Do you mind if I keep the broom in case more of\nthem come?",
+                                           "<BROOM has been exchanged for DEAD COCKROACHES>",
+                                         }, "Broom", "Dead Cockroaches");
+            manB.addInteraction(-1, new[] { "You stay away from me, you disgusting insects!\nI'm warning you!",
+                                            "-smack!-"
+                                          }, "", "");
 
+            //SEQUOIA THE TRAVELLER
             NPC womanB = new NPC("Sequoia", txtr_womanB, new Vector2(470, 110));
-            womanB.addInteraction(-1, new[] {"I seem to be terribly lost. Can you help me?"}, "", "");
+            womanB.addInteraction(1, new[] { "I seem to be terribly lost. Can you help me?"}, "", "");
+            womanB.addInteraction(1, new[] { "Do you have a map or something I could use?",
+                                             "Is that ... a compass? Wow, it smells. Where'd\nyou get it from, the sewer?",
+                                             "Hahaha! That would be disgusting. I'm sure you\ndidn't do that.",
+                                             "Anyways, thank you! Now I can find my way\nthrough the woods to the next town.",
+                                             "Take this decorative hair comb as thanks.\nI picked it up on my travels.",
+                                             "<COMPASS has been exchanged for DECORATIVE COMB>"
+                                           }, "Compass", "Decorative Comb");
+            womanB.addInteraction(-1, new[] { "Wait, is there slime on this?" }, "", "");
 
+            //MARRI THE MAID
             NPC womanC = new NPC("Marri", txtr_womanC, new Vector2(120, 40));
-            womanC.addInteraction(-1, new[] {"I'm not doing anything! Honest! Leave me alone!"}, "", "");
+            womanC.addInteraction(1, new[] { "Watch out, boy. Can't you see I'm sweeping here?",
+                                             "-snap!-",
+                                             "Awww, rats. My broom broke. If you can find\nsomething to fix it with, I'll reward you."
+                                           }, "", "");
+            womanC.addInteraction(1, new[] { "Didja find something to fix my broom yet?\nGet a move on! This walkway won't sweep itself,\nyou know!",
+                                             "What's that you've got there, boy? A pot of glue?\nI think that just might work.",
+                                             "...",
+                                             "Good as new! Just gimme a minute here...",
+                                             "-sweep sweep-",
+                                             "-swish swish-",
+                                             "All done. Since I don't need it anymore, you can\nhave the broom. You earned it.",
+                                             "<GLUE POT has been exchanged for BROOM>"
+                                           }, "Glue Pot", "Broom");
+            womanC.addInteraction(1, new[] { "You think I ripped you off? I didn't say I was\ngoing to give you a *good* reward, did I?" }, "", "");
+            womanC.addInteraction(-1, new[] { "I'm too busy to deal with you. Scram!" }, "", "");
 
+            //SEWER GRATES
+            NPC grate1 = new NPC("Sewer Grate", txtr_grate, new Vector2(220, 50));
+            grate1.addInteraction(-1, new[] {"It's a sewer grate. There's unidentified sludge\nin it."}, "", "");
+            NPC grate2 = new NPC("Sewer Grate", txtr_grate, new Vector2(440, 147));
+            grate2.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
+            NPC grate3 = new NPC("Sewer Grate", txtr_grate, new Vector2(160, 340));
+            grate3.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
+            NPC grate4 = new NPC("Sewer Grate", txtr_grate, new Vector2(315, 243));
+            grate4.addInteraction(1, new[] { "It's a sewer grate. There's unidentified sludge\nin it.",
+                                             "Wait, something's glinting down there. What could\nit be?"
+                                           }, "", "");
+            grate4.addInteraction(1, new[] { "Ewww. You're not reaching your hand in there.\nMaybe you could find something to help you get\nthe object out?",
+                                             "-whhhhiiiirrrr-",
+                                             "-squelch-",
+                                             "-slurp-",
+                                             "Got it! It's a golden compass. In your excitement,\nyou accidentally drop the fishing rod into\nthe sewer. Woops.",
+                                             "<FISHING POLE has been exchanged for COMPASS>"
+                                           }, "Fishing Pole", "Compass");
+            grate4.addInteraction(-1, new[] { "It's a sewer grate. Your fishing pole sits in the\nmuck. No getting it back now." }, "", "");
+
+            //Add everyone to the array
             list_npc.Add(blacksmith);
             list_npc.Add(seamstress);
             list_npc.Add(fisherman);
@@ -389,6 +485,10 @@ namespace MaGuffin
             list_npc.Add(manB);
             list_npc.Add(womanB);
             list_npc.Add(womanC);
+            list_npc.Add(grate1);
+            list_npc.Add(grate2);
+            list_npc.Add(grate3);
+            list_npc.Add(grate4);
         }
 
         public void setUpSceneryCollision()

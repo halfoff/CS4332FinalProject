@@ -38,9 +38,9 @@ namespace MaGuffin
         public Vector2 getLoc() { return location; }
         public Rectangle getCollision() { return collision; }
 
-        public void addInteraction(int num, String text)
+        public void addInteraction(int num, String[] text, String i1, String i2)
         {
-            interactions.Add(new Interaction(num, text));
+            interactions.Add(new Interaction(num, text, i1, i2));
         }
 
         /* 0 - up, 1 - down, 2 - left, 3 - right */
@@ -66,10 +66,7 @@ namespace MaGuffin
         {
             for (int i = 0; i < interactions.Count(); i++)
                 if (interactions[i].validInteraction())
-                {
-                    interactions[i].decNumTimes();
                     return interactions[i];
-                }
             return null;
         }
 

@@ -51,10 +51,12 @@ namespace MaGuffin
         int count;
         Boolean lockMovement;
         String npcName;
-        String npcText;
+        String[] npcText;
+        int textProg, textMax;
         List<NPC> list_npc = new List<NPC>();
         List<Rectangle> list_scenery = new List<Rectangle>();
         Texture2D singlePixel;
+        String protagInventory;
 
         public Game1()
         {
@@ -85,8 +87,9 @@ namespace MaGuffin
             count = 0;
             lockMovement = false;
             npcName = "";
-            npcText = "";
-
+            npcText = new String[0];
+            textProg = 0;
+            protagInventory = "Cheese Wheel";
 
             base.Initialize();
         }
@@ -195,11 +198,11 @@ namespace MaGuffin
                 //spriteBatch.Draw(singlePixel, list_scenery[i], Color.White * 0.5f);
 
             //Draw textbox
-            if (npcName != "" && npcText != "")
+            if (npcName != "" && npcText.Length > 0)
             {
                 spriteBatch.Draw(txtr_textbox, Vector2.Zero, Color.White);
                 spriteBatch.DrawString(headerFont, npcName, new Vector2(20, 275), Color.Black);
-                spriteBatch.DrawString(normalFont, npcText, new Vector2(20, 300), Color.Black);
+                spriteBatch.DrawString(normalFont, npcText[textProg], new Vector2(20, 300), Color.Black);
             }
 
             spriteBatch.End();
@@ -241,8 +244,28 @@ namespace MaGuffin
                 int possible = canInteractNPC();
                 if (possible > -1)
                 {
-                    lockMovement = true;
                     Interaction i = list_npc[possible].getInteraction();
+                    if (i == null) return; //if NPC is out of valid interactions, do nothing
+
+                    lockMovement = true;
+                    textProg = 0;
+                    textMax = i.getText().Length;
+
+                    //Check if NPC wants an item
+                    if (i.getItemDesired().Length > 0)
+                    {
+                        if (i.getItemDesired().Equals(protagInventory))
+                        {
+                            textProg = 1;
+                            protagInventory = i.getItemGiven();
+                            i.decNumTimes();
+                        }
+                        else
+                            textMax = 1;
+                    }
+                    else
+                        i.decNumTimes();
+
                     npcName = list_npc[possible].getName();
                     npcText = i.getText();
                 }
@@ -254,9 +277,15 @@ namespace MaGuffin
             KeyboardState keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Space))
             {
-                lockMovement = false;
-                npcName = "";
-                npcText = "";
+                if (textProg < textMax - 1)
+                    textProg++;
+                else
+                {
+                    lockMovement = false; //allow player to move
+                    textProg = 0; //clear variables
+                    npcName = ""; 
+                    npcText = new String[0];
+                }
             }
         }
 
@@ -304,29 +333,53 @@ namespace MaGuffin
         public void setUpNPCs()
         {
             NPC blacksmith = new NPC("Blacksmith", txtr_blacksmith, new Vector2(410, 230));
-            blacksmith.addInteraction(1, "You want a sword, eh? What would a shrimp like you\ndo with a sword?");
-            blacksmith.addInteraction(-1, "I already told you no. I'm not giving you a\nsword. Shoo!");
+            blacksmith.addInteraction(1, new[] {"You want a sword, eh? What would a shrimp like you\ndo with a sword?"}, "", "");
+            blacksmith.addInteraction(-1, new[] {"I already told you no. I'm not giving you a\nsword. Shoo!"}, "", "");
 
             NPC seamstress = new NPC("Seamstress", txtr_seamstress, new Vector2(190, 135));
-            seamstress.addInteraction(-1, "I'm working on a new outfit. Isn't it lovely?");
+            seamstress.addInteraction(-1, new[] {"I'm working on a new outfit. Isn't it lovely?"}, "", "");
 
             NPC fisherman = new NPC("Fisherman", txtr_fisherman, new Vector2(345, 135));
-            fisherman.addInteraction(-1, "I come here every afternoon to drop a line and\ncatch some fish.");
+            fisherman.addInteraction(-1, new[] {"I come here every afternoon to drop a line and\ncatch some fish."}, "", "");
 
             NPC gluemaker = new NPC("Craftsman", txtr_gluemaker, new Vector2(220, 325));
-            gluemaker.addInteraction(-1, "I've just moved to town. I hope the citizens\nhere will buy my wares.");
+            gluemaker.addInteraction(1, new[] { "I've just moved to town to open up a shop.",
+                                                "Hopefully I can find all of the supplies I need..."
+                                              }, "", "");
+            gluemaker.addInteraction(1, new[] { "I can't find any hooves to make glue with!\nWithout them, I'm doomed!", //text if item is not held
+                                                "Look, I really don't have time right now, kid.\nI've got to find...",
+                                                "Wait.",
+                                                "Are those Boar Hooves you're holding?! You've got\nto give them to me! I'll reward you!",
+                                                "...",
+                                                "...",
+                                                "...",
+                                                "There, all done. You've really save my sorry hide,\nkid. Without you, I wouldn't have been able to\n" + 
+                                                "get my glue shop off the ground.",
+                                                "Here, take some of my first glue batch as a reward.",
+                                                "<BOAR HOOVES has been exchanged for GLUE POT>"
+                                              }, "Boar Hooves", "Glue Pot");
 
             NPC manA = new NPC("Harold", txtr_manA, new Vector2(440, 25));
-            manA.addInteraction(-1, "-pant pant- Let me catch my breath.");
+            manA.addInteraction(1, new[] { "You shouldn't ever see this text. ;)", //text if item is not held
+                                           "-pant pant- Let me catch my breath.",
+                                           "-pant pant-",
+                                           "Whew, running is tough work! I'm starving! You\nwouldn't happen to have anything to eat, would\nyou?",
+                                           "...",
+                                           "You do?! Wow, that Cheese Wheel looks delicious!\nThanks, stranger!",
+                                           "They're not much, but I'll give you these Boar\nHooves I found while running as my thanks.",
+                                           "<CHEESE WHEEL has been exchanged for BOAR HOOVES>"
+                                         }, "Cheese Wheel", "Boar Hooves");
+            manA.addInteraction(3, new[] { "-munch munch- Thanks again, stranger!" }, "", "");
+            manA.addInteraction(-1, new[] { "-braaaappp- Wow, that really hit the spot!" }, "", "");
 
             NPC manB = new NPC("Samson", txtr_manB, new Vector2(70, 230));
-            manB.addInteraction(-1, "What are you looking at?");
+            manB.addInteraction(-1, new[] {"What are you looking at?"}, "", "");
 
             NPC womanB = new NPC("Sequoia", txtr_womanB, new Vector2(470, 110));
-            womanB.addInteraction(-1, "I seem to be terribly lost. Can you help me?");
+            womanB.addInteraction(-1, new[] {"I seem to be terribly lost. Can you help me?"}, "", "");
 
             NPC womanC = new NPC("Marri", txtr_womanC, new Vector2(120, 40));
-            womanC.addInteraction(-1, "I'm not doing anything! Honest! Leave me alone!");
+            womanC.addInteraction(-1, new[] {"I'm not doing anything! Honest! Leave me alone!"}, "", "");
 
             list_npc.Add(blacksmith);
             list_npc.Add(seamstress);

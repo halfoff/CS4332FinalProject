@@ -30,12 +30,11 @@ namespace MaGuffin
 
         public Player(SpriteBatch sprites, Vector2 location, Vector2 size): base(location, (int)size.X, (int)size.Y)
         {
-            
             batch = sprites;
             spd = Vector2.Zero;
             health = 10;
             damage = 5;
-            
+            CurrentplayerItem = "Cheese Wheel"; //starts player off with a cheese wheel (wny not?)
         }
 
         //New Simple Inventory System
@@ -50,9 +49,6 @@ namespace MaGuffin
         {
             return CurrentplayerItem;
         }
-
-       
-        
  
     }
 }

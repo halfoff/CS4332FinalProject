@@ -57,6 +57,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="GameEntity.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="NPC.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Screen.cs" />
+    <Compile Include="ScreenManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

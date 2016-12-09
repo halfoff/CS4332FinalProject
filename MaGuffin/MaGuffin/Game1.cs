@@ -58,6 +58,8 @@ namespace MaGuffin
         List<Rectangle> list_scenery = new List<Rectangle>();
         Texture2D singlePixel;
         String protagInventory;
+        //Array of screens. Index 0 is the main screen 
+        List<Screen> screens = new List<Screen>();
 
         public Game1()
         {
@@ -285,6 +287,7 @@ namespace MaGuffin
             {
                 if (textProg < textMax - 1)
                     textProg++;
+                  
                 else
                 {
                     lockMovement = false; //allow player to move
@@ -493,6 +496,7 @@ namespace MaGuffin
 
         public void setUpSceneryCollision()
         {
+            //Main Town Screen
             Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
             Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
             Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
@@ -514,5 +518,96 @@ namespace MaGuffin
             list_scenery.Add(bottomWall1);
             list_scenery.Add(bottomWall2);
         }
+
+        public void ScreenSetup()
+        {
+            NPC[] SC0 = { };
+            NPC[] SC1 = { };
+            NPC[] SC2 = { };
+            screens.Add(new Screen(txtr_citymap, SC0, this.genTownCollision()));//Central Town Map
+            screens.Add(new Screen(txtr_citymap, SC1, this.genFieldCollision()));//Field
+            screens.Add(new Screen(txtr_citymap, SC2, this.genHomeCollision()));//PlayerHome
+        }
+        //I know. I'm sorry. I waited too long 
+
+        public List<Rectangle> genTownCollision()
+        {
+            List<Rectangle> r = new List<Rectangle>();
+            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
+            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
+            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
+            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
+            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
+            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
+            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
+            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
+            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
+            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
+            r.Add(topWall1);
+            r.Add(topWall2);
+            r.Add(leftBuilding1);
+            r.Add(leftBuilding2);
+            r.Add(leftBuilding3);
+            r.Add(buildingLine1);
+            r.Add(buildingLine2);
+            r.Add(buildingLine3);
+            r.Add(bottomWall1);
+            r.Add(bottomWall2);
+            return r;
+
+        }
+        public List<Rectangle> genFieldCollision()
+        {
+            List<Rectangle> r = new List<Rectangle>();
+            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
+            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
+            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
+            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
+            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
+            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
+            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
+            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
+            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
+            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
+            r.Add(topWall1);
+            r.Add(topWall2);
+            r.Add(leftBuilding1);
+            r.Add(leftBuilding2);
+            r.Add(leftBuilding3);
+            r.Add(buildingLine1);
+            r.Add(buildingLine2);
+            r.Add(buildingLine3);
+            r.Add(bottomWall1);
+            r.Add(bottomWall2);
+            return r;
+
+        }
+        public List<Rectangle> genHomeCollision()
+        {
+            List<Rectangle> r = new List<Rectangle>();
+            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
+            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
+            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
+            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
+            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
+            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
+            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
+            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
+            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
+            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
+            r.Add(topWall1);
+            r.Add(topWall2);
+            r.Add(leftBuilding1);
+            r.Add(leftBuilding2);
+            r.Add(leftBuilding3);
+            r.Add(buildingLine1);
+            r.Add(buildingLine2);
+            r.Add(buildingLine3);
+            r.Add(bottomWall1);
+            r.Add(bottomWall2);
+            return r;
+
+        }
+
     }
 }

@@ -16,15 +16,18 @@ namespace MaGuffin
     {
         //background
         Texture2D background;
-        List<NPC> inhabitants;
+        List<NPC> inhabitants; 
+        List<Rectangle> scenery;
 
-        public Screen(Texture2D bg, NPC[] npcs )
+        public Screen(Texture2D bg, NPC[] npcs, List<Rectangle> r)
         {
+            inhabitants = new List<NPC>();
             background = bg;
             for (int i = 0; i < npcs.Length; i++)
             {
                 inhabitants.Add(npcs[i]);
             }
+            scenery = r;
 
         }
 

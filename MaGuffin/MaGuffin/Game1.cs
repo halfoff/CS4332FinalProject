@@ -179,7 +179,12 @@ namespace MaGuffin
         {
             //Counters for checking input
             if (count == 0 && !lockMovement)
+            {
                 checkInput();
+                checkExit();
+
+            }
+                
             else if (count == 0 && lockMovement)
                 checkTextProgression();
 
@@ -556,9 +561,9 @@ namespace MaGuffin
             NPC[] SC0 = { n[0], n[1], n[3], n[4], n[6], n[7], n[8], n[9], n[11] }; //0,1,3,4,6,7,8,9,11
             NPC[] SC1 = { n[2], n[5]}; //2,5
             NPC[] SC2 = {n[10]}; //10
-            screens.Add(new Screen(txtr_citymap, SC0, this.genTownCollision(), new Vector2(187,375)));//Central Town Map
-            screens.Add(new Screen(txtr_field, SC1, this.genFieldCollision(), new Vector2(35,30)));//Field
-            screens.Add(new Screen(txtr_home, SC2, this.genHomeCollision(), new Vector2(185,15)));//PlayerHome
+            screens.Add(new Screen(0,txtr_citymap, SC0, this.genTownCollision(), new Vector2(187,375)));//Central Town Map
+            screens.Add(new Screen(1,txtr_field, SC1, this.genFieldCollision(), new Vector2(35,30)));//Field
+            screens.Add(new Screen(2,txtr_home, SC2, this.genHomeCollision(), new Vector2(185,31)));//PlayerHome
         }
         //I know. I'm sorry. I waited too long 
 
@@ -630,6 +635,50 @@ namespace MaGuffin
             curScreen = ns;
 
 
+        }
+
+        void checkExit()
+        {
+            switch(curScreen.id)
+            {
+                case 0:checkCityExit();
+                    break;
+                case 1: checkFieldExit();
+                    break;
+                case 2: checkHomeExit();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void checkHomeExit()
+        {
+            if(v_protagLoc.Y < 30)
+            {
+                ChangeScreen(screens[0]);
+            }
+        }
+        private void checkFieldExit()
+        {
+            if(v_protagLoc.X < 30)
+            {
+                ChangeScreen(screens[0]);
+                v_protagLoc.X = 519;
+                v_protagLoc.Y = 55;
+            }
+        }
+        private void checkCityExit()
+        {
+            if (v_protagLoc.Y > 380)
+            {
+                ChangeScreen(screens[2]);
+            }
+            else if (v_protagLoc.X > 520 && v_protagLoc.Y <=70)
+            {
+                ChangeScreen(screens[1]);
+                
+            }
         }
 
     }

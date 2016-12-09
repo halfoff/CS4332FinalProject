@@ -19,9 +19,11 @@ namespace MaGuffin
         List<NPC> inhabitants; 
         List<Rectangle> scenery;
         Vector2 PlayerEnterLocation;
+        public int id;
 
-        public Screen(Texture2D bg, NPC[] npcs, List<Rectangle> r, Vector2 pel)
+        public Screen(int d, Texture2D bg, NPC[] npcs, List<Rectangle> r, Vector2 pel)
         {
+            id = d;
             PlayerEnterLocation = pel;
             inhabitants = new List<NPC>();
             background = bg;

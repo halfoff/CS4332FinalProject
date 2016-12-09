@@ -184,10 +184,14 @@ namespace MaGuffin
                 checkExit();
 
             }
-                
-            else if (count == 0 && lockMovement)
-                checkTextProgression();
 
+            else if (count == 0 && lockMovement)
+            { 
+                checkTextProgression();
+                
+
+
+            }
             v_protagLoc += v_protagSpd; //updates protag location based on speed
 
             //Reset counters
@@ -289,6 +293,7 @@ namespace MaGuffin
                             textProg = 1;
                             protagInventory = i.getItemGiven();
                             i.decNumTimes();
+                            
                         }
                         else
                             textMax = 1;
@@ -302,22 +307,35 @@ namespace MaGuffin
             }
         }
 
-        public void checkTextProgression()
+        public bool checkTextProgression()
         {
+            bool hasText = false;
             KeyboardState keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Space))
             {
+                
                 if (textProg < textMax - 1)
+                {
+                    
                     textProg++;
-                  
+                    hasText = true;
+                    System.Threading.Thread.Sleep(1000);
+
+
+
+                }
                 else
                 {
                     lockMovement = false; //allow player to move
                     textProg = 0; //clear variables
-                    npcName = ""; 
+                    npcName = "";
                     npcText = new String[0];
+                    System.Threading.Thread.Sleep(1000);
+
                 }
+                
             }
+            return hasText;
         }
 
         /* 0 - up, 1 - down, 2 - left, 3 - right */

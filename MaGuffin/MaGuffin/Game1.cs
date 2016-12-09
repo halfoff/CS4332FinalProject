@@ -42,6 +42,9 @@ namespace MaGuffin
         Texture2D txtr_grate;
         Texture2D txtr_citymap;
         Texture2D txtr_textbox;
+        Texture2D txtr_field;
+        Texture2D txtr_home;
+        Texture2D txtr_currentbg;
         //Vectors
         Vector2 v_protagLoc;
         Vector2 v_protagSpd;
@@ -60,6 +63,7 @@ namespace MaGuffin
         String protagInventory;
         //Array of screens. Index 0 is the main screen 
         List<Screen> screens = new List<Screen>();
+        Screen curScreen;
 
         public Game1()
         {
@@ -78,8 +82,9 @@ namespace MaGuffin
         /// </summary>
         protected override void Initialize()
         {
+            this.LoadContent();
             //Initialize vector values
-            v_protagLoc = new Vector2(187,375);
+            
             v_protagSpd = Vector2.Zero;
 
             //Initialize single pixel texture
@@ -99,6 +104,15 @@ namespace MaGuffin
             textMax = npcText.Length;
             protagInventory = "Cheese Wheel";
 
+            // setUpNPCs();
+            //ChangeThis
+            //setUpSceneryCollision();
+            list_npc = new List<NPC>();
+            ScreenSetup();
+            curScreen = screens[2];
+            ChangeScreen(curScreen);
+            
+            v_protagLoc = new Vector2(170, 50);
             base.Initialize();
         }
 
@@ -134,14 +148,17 @@ namespace MaGuffin
             txtr_grate = Content.Load<Texture2D>("npc_grate");
 
             txtr_citymap = Content.Load<Texture2D>("city");
+            txtr_field = Content.Load<Texture2D>("Field");
+            txtr_home = Content.Load<Texture2D>("home");
             txtr_textbox = Content.Load<Texture2D>("textbox");
 
             //Fonts
             normalFont = Content.Load<SpriteFont>("font");
             headerFont = Content.Load<SpriteFont>("boldfont");
 
-            setUpNPCs();
-            setUpSceneryCollision();
+
+            
+
         }
 
         /// <summary>
@@ -190,7 +207,7 @@ namespace MaGuffin
             spriteBatch.Begin();
 
             //Draw map
-            spriteBatch.Draw(txtr_citymap, Vector2.Zero, Color.White);
+            spriteBatch.Draw(txtr_currentbg, Vector2.Zero, Color.White);
 
             //Draw NPC sprites
             for (int i = 0; i < list_npc.Count; i++)
@@ -339,7 +356,7 @@ namespace MaGuffin
             return -1;
         }
 
-        public void setUpNPCs()
+         List<NPC> setUpNPCs()
         {
             //BLACKSMITH
             NPC blacksmith = new NPC("Blacksmith", txtr_blacksmith, new Vector2(410, 230));
@@ -360,7 +377,7 @@ namespace MaGuffin
             seamstress.addInteraction(-1, new[] { "-hums happily" }, "", "");
 
             //FISHERMAN
-            NPC fisherman = new NPC("Fisherman", txtr_fisherman, new Vector2(345, 135));
+            NPC fisherman = new NPC("Fisherman", txtr_fisherman, new Vector2(130, 95));
             fisherman.addInteraction(1, new[] {"I come here every afternoon to drop a line and\ncatch some fish."}, "", "");
             fisherman.addInteraction(1, new[] { "Curses! I seem to have run out of bait.",
                                                 "Wait, you've found me more bait? Thank you,\nstranger! Let's see if the fish like it.",
@@ -464,7 +481,7 @@ namespace MaGuffin
             grate1.addInteraction(-1, new[] {"It's a sewer grate. There's unidentified sludge\nin it."}, "", "");
             NPC grate2 = new NPC("Sewer Grate", txtr_grate, new Vector2(440, 147));
             grate2.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
-            NPC grate3 = new NPC("Sewer Grate", txtr_grate, new Vector2(125, 325));
+            NPC grate3 = new NPC("Sewer Grate", txtr_grate, new Vector2(175, 150));
             grate3.addInteraction(-1, new[] { "It's a sewer grate. There's unidentified sludge\nin it." }, "", "");
             NPC grate4 = new NPC("Sewer Grate", txtr_grate, new Vector2(315, 243));
             grate4.addInteraction(1, new[] { "It's a sewer grate. There's unidentified sludge\nin it.",
@@ -480,21 +497,23 @@ namespace MaGuffin
             grate4.addInteraction(-1, new[] { "It's a sewer grate. Your fishing pole sits in the\nmuck. No getting it back now." }, "", "");
 
             //Add everyone to the array
-            list_npc.Add(blacksmith);
-            list_npc.Add(seamstress);
-            list_npc.Add(fisherman);
-            list_npc.Add(gluemaker);
-            list_npc.Add(manA);
-            list_npc.Add(manB);
-            list_npc.Add(womanB);
-            list_npc.Add(womanC);
-            list_npc.Add(grate1);
-            list_npc.Add(grate2);
-            list_npc.Add(grate3);
-            list_npc.Add(grate4);
+            List<NPC> tmpList = new List<NPC>();
+            tmpList.Add(blacksmith);
+            tmpList.Add(seamstress);
+            tmpList.Add(fisherman);
+            tmpList.Add(gluemaker);
+            tmpList.Add(manA);
+            tmpList.Add(manB);
+            tmpList.Add(womanB);
+            tmpList.Add(womanC);
+            tmpList.Add(grate1);
+            tmpList.Add(grate2);
+            tmpList.Add(grate3);
+            tmpList.Add(grate4);
+            return tmpList;
         }
 
-        public void setUpSceneryCollision()
+        /*public void setUpSceneryCollision()
         {
             //Main Town Screen
             Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
@@ -517,16 +536,29 @@ namespace MaGuffin
             list_scenery.Add(buildingLine3);
             list_scenery.Add(bottomWall1);
             list_scenery.Add(bottomWall2);
-        }
+        }*/
 
         public void ScreenSetup()
         {
-            NPC[] SC0 = { };
-            NPC[] SC1 = { };
-            NPC[] SC2 = { };
-            screens.Add(new Screen(txtr_citymap, SC0, this.genTownCollision()));//Central Town Map
-            screens.Add(new Screen(txtr_citymap, SC1, this.genFieldCollision()));//Field
-            screens.Add(new Screen(txtr_citymap, SC2, this.genHomeCollision()));//PlayerHome
+            /*tmpList.Add(blacksmith); 0
+            tmpList.Add(seamstress); 1
+            tmpList.Add(fisherman); 2
+            tmpList.Add(gluemaker); 3
+            tmpList.Add(manA); 4
+            tmpList.Add(manB); 5
+            tmpList.Add(womanB); 6
+            tmpList.Add(womanC); 7
+            tmpList.Add(grate1); 8
+            tmpList.Add(grate2); 9
+            tmpList.Add(grate3); 10
+            tmpList.Add(grate4); 11  */ 
+            List<NPC> n = setUpNPCs();
+            NPC[] SC0 = { n[0], n[1], n[3], n[4], n[6], n[7], n[8], n[9], n[11] }; //0,1,3,4,6,7,8,9,11
+            NPC[] SC1 = { n[2], n[5]}; //2,5
+            NPC[] SC2 = {n[10]}; //10
+            screens.Add(new Screen(txtr_citymap, SC0, this.genTownCollision(), new Vector2(187,375)));//Central Town Map
+            screens.Add(new Screen(txtr_field, SC1, this.genFieldCollision(), new Vector2(35,30)));//Field
+            screens.Add(new Screen(txtr_home, SC2, this.genHomeCollision(), new Vector2(185,15)));//PlayerHome
         }
         //I know. I'm sorry. I waited too long 
 
@@ -559,25 +591,18 @@ namespace MaGuffin
         public List<Rectangle> genFieldCollision()
         {
             List<Rectangle> r = new List<Rectangle>();
-            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
-            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
-            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
-            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
-            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
-            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
-            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
-            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
-            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
-            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
+            Rectangle topWall1 = new Rectangle(0, 0, 422, 15);
+            Rectangle topWall2 = new Rectangle(0, 46, 30, 350);
+            Rectangle water1 = new Rectangle(150, 95, 50, 100);
+            Rectangle water2 = new Rectangle(150, 120, 50, 280 );
+            Rectangle endPier = new Rectangle(195, 100, 10, 120);
+            Rectangle bottomWall2 = new Rectangle(0, 390, 544, 10);
+            
             r.Add(topWall1);
             r.Add(topWall2);
-            r.Add(leftBuilding1);
-            r.Add(leftBuilding2);
-            r.Add(leftBuilding3);
-            r.Add(buildingLine1);
-            r.Add(buildingLine2);
-            r.Add(buildingLine3);
-            r.Add(bottomWall1);
+            r.Add(water1);
+            r.Add(water2);
+            r.Add(endPier);
             r.Add(bottomWall2);
             return r;
 
@@ -585,27 +610,25 @@ namespace MaGuffin
         public List<Rectangle> genHomeCollision()
         {
             List<Rectangle> r = new List<Rectangle>();
-            Rectangle topWall1 = new Rectangle(0, 0, 422, 38);
-            Rectangle topWall2 = new Rectangle(469, 0, 80, 38);
-            Rectangle leftBuilding1 = new Rectangle(13, 80, 80, 52);
-            Rectangle leftBuilding2 = new Rectangle(13, 176, 80, 52);
-            Rectangle leftBuilding3 = new Rectangle(13, 272, 80, 52);
-            Rectangle buildingLine1 = new Rectangle(140, 80, 328, 52);
-            Rectangle buildingLine2 = new Rectangle(140, 176, 328, 52);
-            Rectangle buildingLine3 = new Rectangle(140, 272, 328, 52);
-            Rectangle bottomWall1 = new Rectangle(0, 368, 172, 32);
-            Rectangle bottomWall2 = new Rectangle(218, 368, 332, 32);
-            r.Add(topWall1);
-            r.Add(topWall2);
-            r.Add(leftBuilding1);
-            r.Add(leftBuilding2);
-            r.Add(leftBuilding3);
-            r.Add(buildingLine1);
-            r.Add(buildingLine2);
-            r.Add(buildingLine3);
-            r.Add(bottomWall1);
-            r.Add(bottomWall2);
+            Rectangle house = new Rectangle(160, 95, 40, 20);
+            Rectangle leftSide = new Rectangle(0, 0, 100, 400);
+            Rectangle rightSide = new Rectangle(270, 0, 400, 30);
+            r.Add(house);
+            r.Add(leftSide);
+            r.Add(rightSide);
+            
             return r;
+
+        }
+
+        void ChangeScreen(Screen ns)
+        {
+            v_protagLoc = ns.getPEL();
+            txtr_currentbg = ns.getBackground();
+            list_scenery = ns.getScenery();
+            list_npc = ns.getNPC();
+            curScreen = ns;
+
 
         }
 

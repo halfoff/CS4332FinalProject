@@ -317,14 +317,17 @@ namespace MaGuffin
             if (keyboard.IsKeyDown(Keys.Space))
             {
                 if (textProg < textMax - 1)
+                {
                     textProg++;
-                  
+                    System.Threading.Thread.Sleep(1000);
+                }
                 else
                 {
                     lockMovement = false; //allow player to move
                     textProg = 0; //clear variables
-                    npcName = ""; 
+                    npcName = "";
                     npcText = new String[0];
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
         }

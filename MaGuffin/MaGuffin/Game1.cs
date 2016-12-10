@@ -319,7 +319,7 @@ namespace MaGuffin
                 if (textProg < textMax - 1)
                 {
                     textProg++;
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(250);
                 }
                 else
                 {
@@ -629,7 +629,7 @@ namespace MaGuffin
             List<Rectangle> r = new List<Rectangle>();
             Rectangle house = new Rectangle(160, 95, 40, 20);
             Rectangle leftSide = new Rectangle(0, 0, 100, 400);
-            Rectangle rightSide = new Rectangle(270, 0, 400, 30);
+            Rectangle rightSide = new Rectangle(270, 0, 400,400);
             r.Add(house);
             r.Add(leftSide);
             r.Add(rightSide);

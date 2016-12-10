@@ -96,9 +96,8 @@ namespace MaGuffin
             lockMovement = true;
             npcName = " ";
             npcText = new[] { "Press SPACE to advance text and talk to NPCs.\nUse the ARROW KEYS to move.",
-                              "You are Mac MaGuffin, adventure extrodinare.",
-                              "At least, you would be an adventurer if you\nhadn't lost your trusty sword.",
-                              "Maybe someone in town will trade you one? You\ndon't have any money though, just this Cheese\nWheel..."
+                              "Your name is Mac MaGuffin, adventure extrodinare.\nAt least, you would be an adventurer if you\nhadn't lost your trusty sword.",
+                              "Maybe you can buy a new one from someone in town?\nYou don't have any money though, just this Cheese\nWheel..."
                             };
             textProg = 0;
             textMax = npcText.Length;
@@ -155,10 +154,6 @@ namespace MaGuffin
             //Fonts
             normalFont = Content.Load<SpriteFont>("font");
             headerFont = Content.Load<SpriteFont>("boldfont");
-
-
-            
-
         }
 
         /// <summary>
@@ -177,21 +172,31 @@ namespace MaGuffin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            if (protagInventory.Equals("Sword"))
+            {
+                if (!lockMovement)
+                {
+                    lockMovement = true;
+                    npcName = " ";
+                    npcText = new[] { "Congratulations! You have obtained a new sword\nfrom the town blacksmith!",
+                                      "Mac MaGuffin, adventure extrodinare, is back in\nbusiness once again. Press SPACE to end the game.",
+                                      ""
+                                    }; 
+                    textProg = 0;
+                    textMax = npcText.Length;
+                }
+                else if (textProg == (textMax - 1)) { this.Exit(); }
+            }
+
             //Counters for checking input
             if (count == 0 && !lockMovement)
             {
                 checkInput();
                 checkExit();
-
-            }
-
+            } 
             else if (count == 0 && lockMovement)
-            { 
                 checkTextProgression();
-                
 
-
-            }
             v_protagLoc += v_protagSpd; //updates protag location based on speed
 
             //Reset counters
@@ -293,7 +298,6 @@ namespace MaGuffin
                             textProg = 1;
                             protagInventory = i.getItemGiven();
                             i.decNumTimes();
-                            
                         }
                         else
                             textMax = 1;
@@ -307,35 +311,22 @@ namespace MaGuffin
             }
         }
 
-        public bool checkTextProgression()
+        public void checkTextProgression()
         {
-            bool hasText = false;
             KeyboardState keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Space))
             {
-                
                 if (textProg < textMax - 1)
-                {
-                    
                     textProg++;
-                    hasText = true;
-                    System.Threading.Thread.Sleep(1000);
-
-
-
-                }
+                  
                 else
                 {
                     lockMovement = false; //allow player to move
                     textProg = 0; //clear variables
-                    npcName = "";
+                    npcName = ""; 
                     npcText = new String[0];
-                    System.Threading.Thread.Sleep(1000);
-
                 }
-                
             }
-            return hasText;
         }
 
         /* 0 - up, 1 - down, 2 - left, 3 - right */
@@ -454,7 +445,7 @@ namespace MaGuffin
 
             //SAMSON THE SAILOR
             NPC manB = new NPC("Samson", txtr_manB, new Vector2(70, 230));
-            manB.addInteraction(1, new[] { "I'm staying the night at this tavern while\nmy captain recruits new sailors.",
+            manB.addInteraction(1, new[] { "I'm staying the night at a tavern while\nmy captain recruits new sailors.",
                                            "Our last crew was a bunch of sissies, so he\nfired them all. Not me though! I'm tough.",
                                            "-skitter skitter-",
                                            "EEEEEEEEE! Is that a cockroach? Kill it, kill it!"

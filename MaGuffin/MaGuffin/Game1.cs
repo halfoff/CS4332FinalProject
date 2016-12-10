@@ -200,8 +200,7 @@ namespace MaGuffin
             v_protagLoc += v_protagSpd; //updates protag location based on speed
 
             //Reset counters
-            if (!lockMovement && count >= 3) count = 0;
-            else if(lockMovement && count >= 5) count = 0;
+            if (count >= 3) count = 0;
             else count++;
 
             base.Update(gameTime);
@@ -327,7 +326,7 @@ namespace MaGuffin
                     textProg = 0; //clear variables
                     npcName = "";
                     npcText = new String[0];
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(250);
                 }
             }
         }
